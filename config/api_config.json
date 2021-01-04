@@ -1,0 +1,6 @@
+[Common]
+used api: TD Ameritrade
+
+[TD Ameritrade]
+use oauth: False
+api key:
