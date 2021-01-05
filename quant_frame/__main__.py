@@ -1,7 +1,7 @@
 import logging
 import sys
 
-import quant_frame.tests.api_test as api_test
+import tests.api_test as api_test
 
 if __name__ == "__main__":
     # example config for logging

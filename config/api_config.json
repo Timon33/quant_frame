@@ -1,6 +1,9 @@
-[Common]
-used api: TD Ameritrade
+{
+  "api": "TD Ameritrade",
 
-[TD Ameritrade]
-use oauth: False
-api key:
+  "TD Ameritrade": {
+    "api_key": "",
+    "api_endpoint": "https://api.tdameritrade.com/v1/",
+    "use_oauth": "false"
+  }
+}

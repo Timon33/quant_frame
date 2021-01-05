@@ -1,5 +1,5 @@
 # Quant Frame
-Quant Frame is a back-testing and walk-forward engine, designed for algorithmic option trading.
+Quant Frame is a back-testing and walk-forward engine, designed for algorithmic trading.
 
 ## Framework Structure
 

@@ -4,7 +4,7 @@ import pandas as pd
 
 SUPPORTED_APIS = {"TD Ameritrade": "td_ameritrade_api"}
 
-# for now specified here, should be read from a config or something
+# TODO for now specified here, should be read from a config or something
 api_name = "TD Ameritrade"
 api = None
 

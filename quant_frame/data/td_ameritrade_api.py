@@ -2,21 +2,29 @@ import logging
 import requests
 import json
 import pandas as pd
-
-API_ENDPOINT = "https://api.tdameritrade.com/v1/"
-
-# TODO
-API_KEY = "8WT8Q3OTCHALL7NYJLLMWXOFYZG3W2JS"
-AUTH_KEY = ""
-
-USE_AUTH = False
+import datetime
 
 logger = logging.getLogger(__name__)
+CONFIG_LOCATION = "./config/api_config.json"
+
+with open(CONFIG_LOCATION) as f:
+    config = json.load(f)
+if config["api"] != "TD Ameritrade":
+    logging.error("The api specified was not TD Ameritrade, but it was loaded anyways")
+
+try:
+    api_config = config["TD Ameritrade"]
+    API_KEY = api_config["api_key"]
+    API_ENDPOINT = api_config["api_endpoint"]
+    USE_OAUTH = api_config["use_oauth"] == "true"
+except KeyError as e:
+    logger.error(f"api config file at {CONFIG_LOCATION} is corrupted and does not contain all needed configuration")
+    exit(1)
 
 
-# TODO
+# TODO implement oauth2
 def make_authenticated_request(endpoint, data, params):
-    pass
+    return None
 
 
 def make_unauthenticated_request(endpoint, data, params):
@@ -26,7 +34,7 @@ def make_unauthenticated_request(endpoint, data, params):
 
     if response.status_code != 200:
         logger.error(f"API Error\nStatus code: {response.status_code}\nResponse:\n{response.text}")
-        return
+        return None
 
     return response
 
@@ -36,7 +44,7 @@ def make_request(endpoint: str, data=None, params=None) -> pd.DataFrame:
     params = {} if params is None else params
 
     # use oauth or just the api key for the request
-    if USE_AUTH:
+    if USE_OAUTH:
         response = make_authenticated_request(endpoint, data=data, params=params)
     else:
         response = make_unauthenticated_request(endpoint, data=data, params=params)
@@ -45,9 +53,9 @@ def make_request(endpoint: str, data=None, params=None) -> pd.DataFrame:
     try:
         json_response = json.loads(response.text)
         df = pd.DataFrame.from_dict(json_response)
-    except Exception as e:
-        logger.error(f"API response could not be passed correctly to pandas dataframe.\n{e}")
-        return
+    except Exception as exp:
+        logger.error(f"API response could not be passed correctly to pandas dataframe.\n{exp}")
+        return pd.DataFrame()
 
     return df
 
@@ -71,21 +79,47 @@ def get_option_chain(symbol, expiration_date, strikes):
     pass
 
 
-def get_historical_data(symbol, from_date, to_date, frequency_type, frequency):
-    endpoint = API_ENDPOINT + "marketdata/{}/pricehistory".format(symbol)
-    params = {"symbol": symbol,
-              "startDate": str(int(from_date * 1000)),  # convert to epoch time in ms
-              "endDate": str(int(to_date * 1000)),
-              "frequencyType": frequency_type,
-              "frequency": frequency}
-    return make_request(endpoint, params=params)
+# turn a timedelta into frequency type and frequency for use by td api
+# TODO use nearest frequency pair if timedelta is not exactly supported
+def timedelta_to_frequency(timedelta: datetime.timedelta) -> (str, int):
+    accepted_combinatons = {
+        "minute": [1, 5, 10, 15, 30],
+        "daily": [1],
+        "weekly": [1],
+        "monthly": [1]
+    }
+
+    timedeltas = {
+        "minute": datetime.timedelta(minutes=1),
+        "daily": datetime.timedelta(days=1),
+        "weekly": datetime.timedelta(weeks=1),
+        "monthly": datetime.timedelta(days=30)
+    }
+
+    for frequency_type in accepted_combinatons:
+        frequency = int(timedelta / timedeltas[frequency_type])
+        if frequency in accepted_combinatons[frequency_type]:
+            return frequency_type, frequency
+
+    logger.error("Time resulution can not be used by TD Ameritrade API, using daily resulution instead. See \
+                 https://developer.tdameritrade.com/price-history/apis/get/marketdata/%7Bsymbol%7D/pricehistory")
+
+    return "daily", 1
 
 
-def get_historical_data(symbol, period_type, period, frequency_type, frequency):
+def get_historical_data(symbol, start_time: datetime.datetime, end_time: datetime.datetime, resolution: datetime.timedelta):
     endpoint = API_ENDPOINT + "marketdata/{}/pricehistory".format(symbol)
+    frequency_type, frequency = timedelta_to_frequency(resolution)
+    period_type = "day" if frequency_type == "minute" else "year"  # adjust the period type so it works for the frequency
     params = {"symbol": symbol,
+              "startDate": int(start_time.timestamp() * 1000),  # convert to epoch time in ms
+              "endDate": int(end_time.timestamp() * 1000),
               "periodType": period_type,
-              "period": period,
               "frequencyType": frequency_type,
               "frequency": frequency}
-    return make_request(endpoint, params=params)
+    logger.debug(f"getting historical data for {symbol}")
+    df = make_request(endpoint, params=params)
+    df = df.candles.apply(pd.Series)  # unpack the candles column
+    df.set_index("datetime", inplace=True)
+    df.index = df.index.map(lambda x: datetime.datetime.fromtimestamp(x / 1000))  # convert epoch ms to datetime
+    return df

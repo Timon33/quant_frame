@@ -15,7 +15,7 @@ Used by the `TradingAlgo` to manage the account attributes like liquidity and op
 
 Used to interact with all financial data. Manages the API and the storage of the data.
 
-#### Market
+#### Broker
 
 The Class the provides access to all functionality related to the marked itself.
 This includes all functionality for orders. 
@@ -37,6 +37,5 @@ The `Visualizer` builds different charts and graphs form data.
 ## Data Formats
 
 ###Time
-- Time is represented as epoch time in _ms_
-- Time should be accepted as: epoch time, iso, pandas
+- Time is stored as `datetime.datetime` and `datetime.timedelta` internally
 
