@@ -27,7 +27,7 @@ class DataProvider:
 
     def unsubscribe_from_symbol(self, symbol: Symbol):
         self.logger.debug(f"unsubscribed from symbol {symbol}")
-        self._subscribed_symbols.remove(())
+        self._subscribed_symbols.pop(symbol)
 
     def get_equity_quote(self, symbol):
         self.logger.debug(f"getting quote for symbol {symbol}")

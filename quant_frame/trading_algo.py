@@ -1,45 +1,38 @@
-# holds the TradingAlgo class
-
 import logging
-
-import quant_frame.data.data_provider as data_provider
-import quant_frame.broker.broker as broker
-import quant_frame.portfolio.portfolio_management as portfolio_management
 
 
 class TradingAlgo:
 
-    def __init__(self):
+    def __init__(self, data_provider, broker, portfolio_manager, time_function):
         # init all modules used
-        self.data_provider = data_provider.DataProvider()
-        self.broker = broker.Broker()
-        self.portfolio_manager = portfolio_management.PortfolioManager()
+        self.data_provider = data_provider
+        self.broker = broker
+        self.portfolio_manager = portfolio_manager
 
-        # set logger as child of package
+        # set logger as child logger of package
         self.logger = logging.getLogger(__name__)
 
-    # callback functions
+        self._time = time_function
 
-    def on_market_open(self):
-        pass
-
-    def on_market_close(self):
-        pass
+    # functions for engine calls
 
     def _on_data(self, symbol, data):
-        self.on_data(self, symbol, data)
-        self.broker.on_data(symbol, data)
+        if self._data_callback_function is not None:
+            try:
+                self._data_callback_function(self, symbol, data)
+            except TypeError as e:
+                self.logger.error(f"data callback function was not correctly registered\n{e}")
 
-    def on_data(self, symbol, data):
-        pass
+    # functions implemented by the engine
 
-    def on_fill(self, filled_order):
-        pass
-
-    def on_cancel(self, canceled_order):
-        pass
+    @property
+    def time(self):
+        return self._time()
 
     # register callbacks
 
     def register_order_callback(self, function):
         self.broker.register_order_callback(function)
+
+    def register_data_callback(self, function):
+        self._data_callback_function = function
