@@ -1,6 +1,6 @@
 # Specifications
 
-## Class Structure
+## Classes
 
 ### TradingAlgo
 
@@ -17,8 +17,8 @@ Used to interact with all financial data. Manages the API and the storage of the
 
 #### Broker
 
-The Class the provides access to all functionality related to the marked itself.
-This includes all functionality for orders. 
+The Class the provides access to all functionality related to the exchange.
+This includes all functionality for orders.
 
 ### BackTest
 
@@ -37,5 +37,27 @@ The `Visualizer` builds different charts and graphs form data.
 ## Data Formats
 
 ###Time
+
 - Time is stored as `datetime.datetime` and `datetime.timedelta` internally
+
+### Symbols
+
+- the `quant_frame.data.symbol.Symbol` class stores all information needed to uniquely identify an asset.
+- can be used as dict key. 2 symbol objects should be equal when the reference the same asset on the same marked
+
+
+### Financial Data
+
+- Stored as `pandas.DataFrame` with index `datetime` of type `datetime.datetime`
+
+#### Equities
+
+- columns contain `high`, `open`, `low`, `close` and `volumen`
+- might contain additional columns
+
+#### Options
+
+- columns are `puts` and `calls`
+- in each column there is a dict with timedelta as keys
+- dict entries are dicts themselves mapping from strike price to option price
 
