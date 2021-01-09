@@ -4,7 +4,7 @@ from quant_frame.broker.orders import Order
 
 
 class Broker:
-    # used for callbacks
+
     _orders = {}
 
     def __init__(self):
