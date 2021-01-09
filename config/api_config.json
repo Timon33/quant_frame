@@ -2,8 +2,13 @@
   "api": "TD Ameritrade",
 
   "TD Ameritrade": {
+    "module": "td_ameritrade_api",
     "api_key": "",
     "api_endpoint": "https://api.tdameritrade.com/v1/",
     "use_oauth": "false"
+  },
+
+  "Binance": {
+
   }
 }

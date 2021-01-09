@@ -1,7 +1,6 @@
 import logging
 import datetime
 
-import quant_frame.data.data_api as api
 import quant_frame.data.data_provider as provider
 
 

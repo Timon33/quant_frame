@@ -1,0 +1,7 @@
+{
+  "broker": "Backtest Broker",
+
+  "Backtest Broker": {
+    "module": "backtest_broker"
+  }
+}
