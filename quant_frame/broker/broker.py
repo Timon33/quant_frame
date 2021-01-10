@@ -30,13 +30,15 @@ class Broker:
 
         self.broker.initialize(config_file)
 
-    # _orders is a dict with symbols as keys containing a list of orders for that symbol
     def send_order(self, order: Order):
         self.broker.send_order(order)
 
     def register_order_callback(self, function: Callable[[Order], None]):
         self._order_callback_function = function
-        self.broker.set_order_callback_function(function)
+        self.broker.set_order_callback_function(self.order_callback)
+
+    def order_callback(self, order: Order):
+        self._order_callback_function(order)
 
     def on_data(self, symbol, data):
         self.broker.on_data(symbol, data)

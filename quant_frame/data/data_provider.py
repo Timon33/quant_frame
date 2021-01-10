@@ -1,9 +1,18 @@
 import logging
 import importlib
 import json
+from enum import Enum
 
 from quant_frame.data.symbol import Symbol
 from datetime import timedelta, datetime
+
+
+class TimeResolution(Enum):
+    # MILLI = timedelta(milliseconds=1)
+    SECOND = timedelta(seconds=1)
+    MINUTE = timedelta(minutes=1)
+    HOUR = timedelta(hours=1)
+    DAY = timedelta(days=1)
 
 
 class DataProvider:
@@ -45,9 +54,10 @@ class DataProvider:
     def get_option_chain(self, symbol, expiration_date, strikes):
         pass
 
-    def get_equity_history(self, symbol: Symbol, start_time: datetime, end_time: datetime, resolution: timedelta):
-        return self.api.get_historical_data(symbol.name, start_time, end_time, resolution)
+    def get_equity_history(self, symbol: Symbol, start_time: datetime, end_time: datetime, resolution: TimeResolution):
+        return self.api.get_historical_data(symbol, start_time, end_time, resolution)
 
     # TODO implement random data
-    def get_random_data(self, exp, variance, start_time, end_time, resolution, min_start_price=5.0, max_start_price=1000.0):
+    def get_random_data(self, exp, variance, start_time, end_time, resolution, min_start_price=5.0,
+                        max_start_price=1000.0):
         pass

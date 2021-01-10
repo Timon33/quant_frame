@@ -57,3 +57,6 @@ def on_data(symbol: Symbol, data: pd.DataFrame):
             else:
                 logger = logging.getLogger(__name__)
                 logger.warning("Order could not be processed, because it is not supported by the used api")
+
+        elif order.status in [OrderStatus.FILLED]:
+            del ORDERS[symbol][order]

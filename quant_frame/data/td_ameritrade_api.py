@@ -4,6 +4,8 @@ import json
 import pandas as pd
 import datetime
 
+from quant_frame.data.symbol import Symbol
+
 API_KEY = ""
 API_ENDPOINT = ""
 USE_OAUTH = ""
@@ -91,7 +93,6 @@ def get_option_chain(symbol, expiration_date, strikes):
 
 
 # turn a timedelta into frequency type and frequency for use by td api
-# TODO use nearest frequency pair if timedelta is not exactly supported
 def timedelta_to_frequency(timedelta: datetime.timedelta) -> (str, int):
     accepted_combinatons = {
         "minute": [1, 5, 10, 15, 30],
@@ -119,11 +120,11 @@ def timedelta_to_frequency(timedelta: datetime.timedelta) -> (str, int):
     return "daily", 1
 
 
-def get_historical_data(symbol, start_time: datetime.datetime, end_time: datetime.datetime,
+def get_historical_data(symbol: Symbol, start_time: datetime.datetime, end_time: datetime.datetime,
                         resolution: datetime.timedelta):
     logger = logging.getLogger(__name__)
 
-    endpoint = API_ENDPOINT + "marketdata/{}/pricehistory".format(symbol)
+    endpoint = API_ENDPOINT + "marketdata/{}/pricehistory".format(symbol.name)
     frequency_type, frequency = timedelta_to_frequency(resolution)
     period_type = "day" if frequency_type == "minute" else "year"  # adjust the period type so it works for the frequency
 
