@@ -1,6 +1,7 @@
 import json
 import importlib
 import logging
+from collections.abc import Callable
 
 from quant_frame.broker.orders import Order
 
@@ -29,16 +30,13 @@ class Broker:
 
         self.broker.initialize(config_file)
 
-        # _orders is a dict with symbols as keys containing a list of orders for that symbol
-        def send_order(self, order: Order):
-            if order.symbol not in self._orders:
-                self._orders[order.symbol] = []
-            self._orders[order.symbol].append(order)
+    # _orders is a dict with symbols as keys containing a list of orders for that symbol
+    def send_order(self, order: Order):
+        self.broker.send_order(order)
 
-        def register_order_callback(self, function):
-            self._order_callback_function = function
+    def register_order_callback(self, function: Callable[[Order], None]):
+        self._order_callback_function = function
+        self.broker.set_order_callback_function(function)
 
-        def on_data(self, symbol, data):
-            for order in self._orders[symbol]:
-                # check symbol equity type
-                pass
+    def on_data(self, symbol, data):
+        self.broker.on_data(symbol, data)

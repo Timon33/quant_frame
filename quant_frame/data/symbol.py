@@ -15,6 +15,7 @@ class Symbol:
     _name = ""
     marked = ""
     type = None
+    min_quantity = 1
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
@@ -40,3 +41,6 @@ class Symbol:
 
     def __eq__(self, other):
         return self.uid == other.uid
+
+    def __str__(self):
+        return f"Symbol: {self.type}:{self.marked}:{self._name}"
