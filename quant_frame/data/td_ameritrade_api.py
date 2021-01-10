@@ -114,8 +114,7 @@ def timedelta_to_frequency(timedelta: datetime.timedelta) -> (str, int):
         if frequency in accepted_combinatons[frequency_type]:
             return frequency_type, frequency
 
-    logger.error("Time resulution can not be used by TD Ameritrade API, using daily resulution instead. See \
-                 https://developer.tdameritrade.com/price-history/apis/get/marketdata/%7Bsymbol%7D/pricehistory")
+    logger.error("Time resulution can not be used by TD Ameritrade API, using daily resulution instead. See https://developer.tdameritrade.com/price-history/apis/get/marketdata/%7Bsymbol%7D/pricehistory")
 
     return "daily", 1
 

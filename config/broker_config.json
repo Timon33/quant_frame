@@ -3,5 +3,9 @@
 
   "Backtest Broker": {
     "module": "backtest_broker"
+  },
+
+  "TD Ameritrade": {
+    "module": "td_ameritrade_broker"
   }
 }

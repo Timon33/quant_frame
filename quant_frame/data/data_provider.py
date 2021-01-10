@@ -15,8 +15,7 @@ class DataProvider:
 
         supported_apis = list(config.keys())[1:]
 
-        # TODO for now specified here, should be read from a config or something
-        self.api_name = "TD Ameritrade"
+        self.api_name = config["api"]
         self.api = None
 
         module_name = config[self.api_name]["module"]
