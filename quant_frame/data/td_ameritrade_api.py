@@ -5,6 +5,7 @@ import pandas as pd
 import datetime
 
 from quant_frame.data.symbol import Symbol
+from quant_frame.data.data_provider import TimeResolution
 
 API_KEY = ""
 API_ENDPOINT = ""
@@ -15,8 +16,10 @@ def initialize(config_file):
     global API_KEY, API_ENDPOINT, USE_OAUTH
 
     logger = logging.getLogger(__name__)
+    logger.info("loading TD Ameritrade API")
 
-    config = json.load(config_file)
+    with open(config_file) as f:
+        config = json.load(f)
     if config["api"] != "TD Ameritrade":
         logging.error("The api specified was not TD Ameritrade, but it was loaded anyways")
 
@@ -93,35 +96,17 @@ def get_option_chain(symbol, expiration_date, strikes):
 
 
 # turn a timedelta into frequency type and frequency for use by td api
-def timedelta_to_frequency(timedelta: datetime.timedelta) -> (str, int):
-    accepted_combinatons = {
-        "minute": [1, 5, 10, 15, 30],
-        "daily": [1],
-        "weekly": [1],
-        "monthly": [1]
-    }
-
-    timedeltas = {
-        "minute": datetime.timedelta(minutes=1),
-        "daily": datetime.timedelta(days=1),
-        "weekly": datetime.timedelta(weeks=1),
-        "monthly": datetime.timedelta(days=30)
-    }
-
+def timedelta_to_frequency(resolution: TimeResolution) -> (str, int):
     logger = logging.getLogger(__name__)
-
-    for frequency_type in accepted_combinatons:
-        frequency = int(timedelta / timedeltas[frequency_type])
-        if frequency in accepted_combinatons[frequency_type]:
-            return frequency_type, frequency
-
-    logger.error("Time resulution can not be used by TD Ameritrade API, using daily resulution instead. See https://developer.tdameritrade.com/price-history/apis/get/marketdata/%7Bsymbol%7D/pricehistory")
-
-    return "daily", 1
+    # TODO hour is not supported by api only 30 min
+    resolution_to_pair = {TimeResolution.MINUTE: ("minute", 1), TimeResolution.HOUR: ("minute", 30), TimeResolution.DAY: ("daily", 1)}
+    try:
+        return resolution_to_pair[resolution]
+    except KeyError as e:
+        logger.error(f"Time Resolution {resolution} is not supported by TD Ameritrade API")
 
 
-def get_historical_data(symbol: Symbol, start_time: datetime.datetime, end_time: datetime.datetime,
-                        resolution: datetime.timedelta):
+def get_historical_data(symbol: Symbol, start_time: datetime.datetime, end_time: datetime.datetime, resolution: TimeResolution):
     logger = logging.getLogger(__name__)
 
     endpoint = API_ENDPOINT + "marketdata/{}/pricehistory".format(symbol.name)

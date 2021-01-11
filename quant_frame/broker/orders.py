@@ -23,10 +23,10 @@ class Order:
     creation_time = None
     filled_price = None
 
-    def __init__(self, symbol: Symbol, quantity: float = symbol):
+    def __init__(self, symbol: Symbol, quantity: float = None):
         self.logger = logging.getLogger(__name__)
         self.symbol = symbol
-        self.quantity = quantity
+        self.quantity = quantity if quantity is not None else symbol.min_quantity
         self.status = OrderStatus.OPEN
         self.creation_time = datetime.datetime.now()
 
@@ -43,7 +43,7 @@ class Order:
 
     @quantity.setter
     def quantity(self, value: float):
-        if self.value == 0 or round(value % self.symbol.min_quantity) != 0:
+        if value == 0 or round(value % self.symbol.min_quantity) != 0:
             self.logger.warning(f"can't set the quantity of an order to {value} that has a minimum quantity of {self.symbol.min_quantity}")
         else:
             self._quantity = value
@@ -55,14 +55,14 @@ class Order:
 
 class MarketOrder(Order):
 
-    def __init__(self, symbol: Symbol, status: OrderStatus):
-        super().__init__(symbol, status)
+    def __init__(self, symbol: Symbol, quantity: float = None):
+        super().__init__(symbol, quantity)
 
 
 class LimitOrder(Order):
 
     limit = None
 
-    def __init__(self, symbol: Symbol, status: OrderStatus, limit: float):
-        super().__init__(symbol, status)
+    def __init__(self, symbol: Symbol, limit: float, quantity: float = None):
+        super().__init__(symbol, limit)
         self.limit = limit

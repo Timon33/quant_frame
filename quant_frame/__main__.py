@@ -1,8 +1,6 @@
 import logging
 import sys
 
-import tests.api_test as api_test
-
 if __name__ == "__main__":
     # example config for logging
     logger = logging.getLogger("quant_frame")
@@ -14,6 +12,4 @@ if __name__ == "__main__":
 
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
-
-    api_test.run()
 

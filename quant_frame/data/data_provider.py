@@ -20,7 +20,8 @@ class DataProvider:
     def __init__(self, config_file):
         self.logger = logging.getLogger(__name__)
 
-        config = json.load(config_file)
+        with open(config_file) as f:
+            config = json.load(f)
 
         supported_apis = list(config.keys())[1:]
 
@@ -39,7 +40,7 @@ class DataProvider:
             raise ValueError(
                 f"The requested api {self.api_name} is not supported. Currently supported are {supported_apis}!")
 
-        self.api.inititalize(config_file)
+        self.api.initialize(config_file)
 
     # data_provider handling functions
 

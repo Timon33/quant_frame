@@ -16,7 +16,7 @@ class TradingAlgo:
     def __init__(self, broker, portfolio_manager, time_function):
         # init all modules used
         self.broker = broker
-        self.broker.register_order_callback(self.on_order)
+        self.broker.set_order_callback_function(self.on_order)
         self.portfolio_manager = portfolio_manager
 
         # set logger as child logger of package
@@ -27,7 +27,7 @@ class TradingAlgo:
     def subscribe_to_symbol(self, symbol: Symbol, resolution: TimeResolution):
         self.logger.debug(f"Subscribed to {symbol} with a resolution of {resolution}")
         if resolution not in self._subscribed_symbols:
-            self._subscribed_symbols = []
+            self._subscribed_symbols[resolution] = []
         self._subscribed_symbols[resolution].append(symbol)
 
     def unsubscribe_from_symbol(self, symbol: Symbol, resolution: TimeResolution):

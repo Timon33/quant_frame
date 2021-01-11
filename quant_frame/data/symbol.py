@@ -17,8 +17,9 @@ class Symbol:
     type = None
     min_quantity = 1
 
-    def __init__(self):
+    def __init__(self, name):
         self.logger = logging.getLogger(__name__)
+        self.name = name
 
     @property
     def name(self) -> str:
