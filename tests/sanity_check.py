@@ -21,14 +21,15 @@ class MyTradingAlgo(trading_algo.TradingAlgo):
         self.spy = Symbol("SPY")
         self.subscribe_to_symbol(self.spy, TimeResolution.DAY)
 
-    def on_data(self, symbol: Symbol, data: pd.DataFrame):
-        self.logger.info(f"on data symbol: {symbol}, data: {data}")
+    def on_data(self, symbol, data):
+        self.logger.debug(f"\n\n-------------time: {datetime.fromtimestamp(self.time)}-------------------\n")
+        # self.logger.info(f"on data symbol: {symbol}, data:\n{data}\n")
         order = MarketOrder(symbol, 1)
         self.broker.send_order(order)
 
 
 def run():
-    formatter = logging.Formatter("%(asctime)s - %(module)s - %(levelname)s: %(message)s\n", datefmt="%Y-%m-%d %H:%M:%S")
+    formatter = logging.Formatter("%(asctime)s - %(module)s - %(levelname)s: %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
     logger = logging.getLogger()
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(formatter)
@@ -36,7 +37,7 @@ def run():
     logger.setLevel(logging.DEBUG)
 
     backtest = engine.BackTestEngine("config/api_config.json", "config/broker_config.json")
-    backtest.back_test(MyTradingAlgo, datetime(year=2020, month=12, day=1), datetime(year=2020, month=12, day=31))
+    backtest.back_test(MyTradingAlgo, datetime(year=2020, month=12, day=1), datetime(year=2020, month=12, day=5))
 
 
 if __name__ == "__main__":

@@ -19,7 +19,7 @@ class BackTestEngine:
         return self.current_time
 
     def back_test(self, algorithm_class: trading_algo.TradingAlgo, start_time: datetime.datetime, end_time: datetime.datetime):
-        self.logger.info(f"starting backtest from {start_time} to {end_time}")
+        self.logger.info(f"starting back test from {start_time} to {end_time}")
 
         broker = bt_broker.BackTestBroker(self.broker_config_file)
         portfolio = portfolio_m.PortfolioManager()
@@ -40,12 +40,9 @@ class BackTestEngine:
 
         self.logger.debug("pulled all history data needed from api")
 
-        for self.current_time in range(round(start_time.timestamp()), round(end_time.timestamp()), int(sorted(subscribed_symbols)[0].value.total_seconds())):
+        time_step_in_seconds = int(sorted(subscribed_symbols)[0].value.total_seconds())
+        for self.current_time in range(round(start_time.timestamp()), round(end_time.timestamp()), time_step_in_seconds):
             for resolution in subscribed_symbols:
-                if round((datetime.datetime.fromtimestamp(self.current_time) - start_time) / resolution.value) == 0:
-                    for symbol in subscribed_symbols[resolution]:
-                        algorithm.on_data(symbol, history_data[symbol].loc[pd.Timestamp(start_time): pd.Timestamp(self.current_time, unit="s")])
-
-
-
-
+                # if round((datetime.datetime.fromtimestamp(self.current_time) - start_time) / resolution.value) == 0:
+                for symbol in subscribed_symbols[resolution]:
+                    algorithm._on_data(symbol, history_data[symbol].loc[pd.Timestamp(start_time): pd.Timestamp(self.current_time + time_step_in_seconds, unit="s")])

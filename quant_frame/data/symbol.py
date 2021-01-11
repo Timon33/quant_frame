@@ -44,4 +44,4 @@ class Symbol:
         return self.uid == other.uid
 
     def __str__(self):
-        return f"Symbol: {self.type}:{self.marked}:{self._name}"
+        return f"{self.type}:{self.marked}:{self._name}"

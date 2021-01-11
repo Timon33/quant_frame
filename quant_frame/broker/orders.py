@@ -48,6 +48,10 @@ class Order:
         else:
             self._quantity = value
 
+    def __str__(self):
+        side = "BUY" if self.quantity > 0 else "SELL"
+        return f"{self.status.name}: {side} {self.quantity} {self.symbol.name} @ {self.filled_price}"
+
     def update(self, status: OrderStatus = None, filled_price: float = None):
         self.status = self.status if status is None else status
         self.filled_price = filled_price if filled_price is not None else None

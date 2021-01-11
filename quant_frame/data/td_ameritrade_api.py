@@ -113,8 +113,7 @@ def get_historical_data(symbol: Symbol, start_time: datetime.datetime, end_time:
     frequency_type, frequency = timedelta_to_frequency(resolution)
     period_type = "day" if frequency_type == "minute" else "year"  # adjust the period type so it works for the frequency
 
-    params = {"symbol": symbol,
-              "startDate": int(start_time.timestamp() * 1000),  # convert to epoch time in ms
+    params = {"startDate": int(start_time.timestamp() * 1000),  # convert to epoch time in ms
               "endDate": int(end_time.timestamp() * 1000),
               "periodType": period_type,
               "frequencyType": frequency_type,

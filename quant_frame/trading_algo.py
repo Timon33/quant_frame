@@ -45,9 +45,11 @@ class TradingAlgo:
 
     def _on_data(self, symbol, data):
         try:
-            self.on_data(self, symbol, data)
+            self.on_data(symbol, data)
         except TypeError as e:
             self.logger.error(f"on_data function was not overwritten correctly\n{e}")
+        self.logger.debug(f"calling broker.on_data")
+        self.broker.on_data(symbol, data)
 
     def _on_order(self, order: Order):
         try:
